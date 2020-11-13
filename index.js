@@ -1,8 +1,17 @@
 const express = require('express') 
 const app = express()
 const port = 6969
+const Rpg_user = require('./Models/rpg_user')
 
-app.get('/', (req, res) => {
+let rpg_user = Rpg_user("a","b","c");
+
+
+let rpg_user1 = Rpg_user("a","b","D");
+rpg_user.username = "S"
+console.log(rpg_user.getName())
+console.log(rpg_user1.getName())
+
+app.get('/api/', (req, res) => {
   res.send('Hello World!')
 })
 

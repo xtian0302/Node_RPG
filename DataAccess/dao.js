@@ -1,3 +1,4 @@
+require('../Models/rpg_user')
 const sql = require('mssql')
 const config = {
     user: 'sa',
@@ -7,12 +8,15 @@ const config = {
     options: { encrypt:false }
 }
 //CRUD rpg_user
-async function create (pool) {
+async function create (rpg_user,pool) {
     try { 
         let result1 = await pool.request()
-            .query('select * from rpg_user')
+            .input('user_email', sql.NVarChar, rpg_user.user_email)
+            .input('user_pass', sql.NVarChar, rpg_user.user_pass)
+            .input('username', sql.NVarChar, rpg_user.username)
+            .query('INSERT INTO [dbo].[rpg_user] ([user_email] ,[user_pass] ,[username]) VALUES (@user_email, @user_pass, @username)')
             
-        console.dir(result1) 
+        return(result1) 
     } catch (err) {
         // ... error checks
         console.log(err)
@@ -24,7 +28,7 @@ async function read (user_id,pool) {
             .input('user_id', sql.Int, user_id)
             .query('select * from rpg_user where user_id = @user_id ')
             
-        console.dir(result1) 
+        return(result1) 
     } catch (err) {
         // ... error checks
         console.log(err)
@@ -35,18 +39,22 @@ async function readall (pool) {
         let result1 = await pool.request()
             .query('select * from rpg_user')
             
-        console.dir(result1) 
+        return(result1) 
     } catch (err) {
         // ... error checks
         console.log(err)
     }
 }
-async function update (user_id,pool) {
+async function update (user_id,rpg_user,pool) {
     try { 
         let result1 = await pool.request()
-            .query('select * from rpg_user')
+            .input('user_email', sql.NVarChar, rpg_user.user_email)
+            .input('user_pass', sql.NVarChar, rpg_user.user_pass)
+            .input('username', sql.NVarChar, rpg_user.username)
+            .input('user_id', sql.Int, user_id)
+            .query('update rpg_user set user_email = @user_email, user_pass = @user_pass, username = @username where user_id = @user_id')
             
-        console.dir(result1) 
+        return(result1) 
     } catch (err) {
         // ... error checks
         console.log(err)
@@ -58,7 +66,7 @@ async function del (user_id,pool) {
             .input('user_id', sql.Int, user_id)
             .query('delete from rpg_user where user_id = @user_id ')
             
-        console.dir(result1) 
+        return(result1) 
     } catch (err) {
         // ... error checks
         console.log(err)
@@ -66,7 +74,11 @@ async function del (user_id,pool) {
 }
 async function main(){
     console.log('hello')  
-    let pool = await sql.connect(config)
-    readall(pool)
+    let pool = await sql.connect(config) 
+    
+    console.log(read(1,pool))
+    let rpgUser = {user_email:"test@test", user_pass:"testpass", username:"testo"}
+    console.log(update(1,rpgUser,pool))
+    console.log(read(1,pool))
 }
 main()
