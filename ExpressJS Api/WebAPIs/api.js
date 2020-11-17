@@ -1,16 +1,22 @@
 const express = require('express')  
 const bodyParser = require('body-parser')
+var cors = require('cors')
 const app = express()
 const port = 6969  
 const dao = require('../DataAccess/dao')
 
 let apiNames = ""
 
+app.use(cors());
+
 app.use(bodyParser.json())
 //============================== RPG USER api : Start  ==================================
  //GET 
 app.get('/api/rpg_user/',async (req, res) => { 
-    let obj = await dao.readall()
+    let page = 1
+    if(req.query.page != null)
+        page = req.query.page
+    let obj = await dao.readall(page)
     if (obj instanceof Error) {
         res.status(400).send(new Error('Failed to get all'));
     } else {

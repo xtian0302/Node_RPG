@@ -45,12 +45,16 @@ module.exports = {
         return(err)
     } 
 },
- readall : async function  () {
+ readall : async function  (page) {
+        let multiplier = 1 
+    if(page!=null)
+        multiplier = page  
     try { 
         let pool = await sql.connect(config) 
         let result1
         await pool.request()
-            .query('select * from rpg_user')
+            .input('page', sql.Int, (multiplier*20)-20)
+            .query('select * from rpg_user ORDER BY user_id OFFSET @page ROWS FETCH FIRST 20 ROWS ONLY')
             .then((res) => result1 = res)
             .then(() => pool.close())
 
